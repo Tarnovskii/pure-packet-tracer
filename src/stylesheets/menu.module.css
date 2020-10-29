@@ -1,0 +1,53 @@
+.menu_wrapper {
+  width: 100%;
+  height: 50px;
+  background: #242F40;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.menu_section_wrapper {
+  cursor: pointer;
+  position: relative;
+  height: 100%;
+}
+.menu_section_wrapper button {
+  outline: none;
+  background: none;
+  border: none;
+  height: 100%;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.menu_section_wrapper button[isactive=true], .menu_section_wrapper button:hover {
+  background: #1b232f;
+}
+
+.menu_section_content {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background: #1b232f;
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+.menu_section_content[isopen=false] {
+  display: none;
+}
+.menu_section_content hr {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.menu_section_content p {
+  white-space: nowrap;
+  padding: 5px 20px 5px 10px;
+}
+.menu_section_content p:hover {
+  background: #0e1118;
+}
+
+/*# sourceMappingURL=menu.module.css.map */
