@@ -1,6 +1,6 @@
 import React from 'react'
 
-import s from '../../stylesheets/menu.module.css'
+import s from '../stylesheets/menu.module.css'
 
 export default (props) => {
     return (

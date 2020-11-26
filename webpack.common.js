@@ -7,7 +7,7 @@ module.exports = {
     mode: 'development',
     devtool: 'inline-source-map',
     target: 'electron-renderer',
-    entry: ['./src/index.js','./src/index.css'],
+    entry: ['./src/index.js'],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].[contenthash].js',

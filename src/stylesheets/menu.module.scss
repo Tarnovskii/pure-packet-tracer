@@ -1,12 +1,15 @@
 .menu_wrapper {
+  position: sticky;
+  top: 0;
   width: 100%;
-  height: 50px;
+  flex: 0 0 50px;
   background: #242F40;
   color: white;
   display: flex;
   align-items: center;
   padding-left: 10px;
   padding-right: 10px;
+  z-index: 999999;
 }
 
 .menu_section_wrapper {

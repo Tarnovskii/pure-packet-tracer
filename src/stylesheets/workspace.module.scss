@@ -1,0 +1,10 @@
+.wrapper {
+  flex-grow: 1;
+  position: relative;
+  overflow: auto;
+  span {
+    position: absolute;
+    left: 25px;
+    top: 25px;
+  }
+}

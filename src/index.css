@@ -5,6 +5,16 @@
     padding: 0;
 }
 
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+div[id='root'] {
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+}
 button {
     cursor: pointer;
     font-size: 16px;
