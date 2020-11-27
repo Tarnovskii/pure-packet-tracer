@@ -9,7 +9,13 @@ export class Link {
         this.style = style
     }
 
+    getNodes = () => this.nodes
+
     getToken = () => this.token
+
+    getPower = () => this.power;
+
+    resetDraw = () => this.isDraw = false
 
     draw = (ctx) => {
         if (!this.isDraw) {

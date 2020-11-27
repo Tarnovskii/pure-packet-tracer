@@ -3,10 +3,28 @@
   position: relative;
   overflow: auto;
 }
-.wrapper span {
+
+span {
   position: absolute;
   left: 25px;
-  top: 25px;
+  top: 75px;
+}
+
+.controls {
+  z-index: 10;
+  position: absolute;
+  right: 20px;
+  top: 55px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border: 2px solid black;
+  row-gap: 10px;
+}
+.controls button {
+  width: 100%;
 }
 
 /*# sourceMappingURL=workspace.module.css.map */

@@ -1,8 +1,13 @@
 export class WorkStation {
-    constructor(mac, pos) {
+    constructor(mac, pos, ip) {
         this.mac = mac;
         this.pos = pos;
+        this.ip = ip;
     }
+
+    getId = () => 'ws'
+
+    getIP = () => this.ip
 
     getLinks = () => [this.link]
 
@@ -11,6 +16,12 @@ export class WorkStation {
     createLink = (link) => {
         this.link = link;
     }
+
+    resetDraw = () => {}
+
+    drawLinks = () => {}
+
+    getMac = () => this.mac
 
     draw = (ctx) => {
         ctx.globalCompositeOperation='source-over'
