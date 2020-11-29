@@ -9,11 +9,11 @@ export class Link {
         this.style = style
     }
 
+    getPower = () => this.power;
+
     getNodes = () => this.nodes
 
     getToken = () => this.token
-
-    getPower = () => this.power;
 
     resetDraw = () => this.isDraw = false
 

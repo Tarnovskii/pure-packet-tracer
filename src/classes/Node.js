@@ -6,6 +6,7 @@ export class Node {
         this.links = [];
         this.mac = params.mac
         this.ip = params.ip
+        this.table = {}
     }
 
 
@@ -13,27 +14,21 @@ export class Node {
 
     getIP = () => this.ip
 
+    getTable = () => this.table;
+
+    updateTable = (table) => this.table = table;
+
     getPos = () => this.pos;
 
     getMac = () => this.mac;
 
     getLinks = () => this.links;
 
-    addLinks = (links) => {
-        this.links.push(...links)
-    }
+    addLinks = (links) => this.links.push(...links)
 
-    resetDraw = () => {
-        this.links.forEach(link => {
-            link.resetDraw();
-        })
-    }
+    resetDraw = () => this.links.forEach(link => link.resetDraw())
 
-    drawLinks = () => {
-        this.links.forEach(link => {
-            link.draw(this.ctx);
-        })
-    }
+    drawLinks = () => this.links.forEach(link => link.draw(this.ctx))
 
     draw = () => {
         this.ctx.globalCompositeOperation='source-over'
@@ -44,6 +39,7 @@ export class Node {
         this.ctx.shadowBlur = 2;
         this.ctx.shadowColor = 'black';
         this.ctx.fillRect(this.pos.x - 25, this.pos.y - 25, 50, 50)
+
         if (this.params.region === null) {
             this.ctx.fillRect(this.pos.x - 50, this.pos.y - 50, 100, 100)
         }

@@ -3,7 +3,12 @@ export class WorkStation {
         this.mac = mac;
         this.pos = pos;
         this.ip = ip;
+        this.table = {}
     }
+
+    updateTable = (table) => this.table = table;
+
+    getTable = () => this.table
 
     getId = () => 'ws'
 

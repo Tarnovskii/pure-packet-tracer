@@ -2,7 +2,7 @@ import React, {Fragment} from 'react'
 
 import s from '../stylesheets/workspace.module.css'
 import {Network} from "../classes/Network";
-import {LogicConnection} from "../classes/LogicProtocol";
+import {LogicConnection} from "../controllers/LogicController";
 
 export class Workspace extends React.Component {
     constructor(props) {
@@ -18,12 +18,21 @@ export class Workspace extends React.Component {
 
     componentDidMount() {
         window.onkeydown = (e) => {
-            if (e.key === 'Control') {
-                this.setState({
-                    ctrlDown: true,
-                })
+            switch (e.key.toUpperCase()) {
+                case 'CONTROL': {
+                    this.setState({
+                        ctrlDown: true,
+                    })
+                    break;
+                }
+                case 'L': {
+                    console.log(123)
+                    break;
+                }
+                default: break;
             }
         }
+
         window.onkeyup = (e) => {
             if (e.key === 'Control') {
                 this.setState({
@@ -41,7 +50,7 @@ export class Workspace extends React.Component {
     }
 
     clearCanvas = () => {
-        this.canvasRef.current.getContext('2d').clearRect(0,0, 5000, 2500)
+        this.canvasRef.current.getContext('2d').clearRect(0, 0, 5000, 2500)
     }
 
     createNetwork = () => {
@@ -74,13 +83,14 @@ export class Workspace extends React.Component {
     }
 
     startLogicBroadcast = () => {
-        new LogicConnection(0, 2, this.state.net, this.canvasRef.current.getContext('2d'))
+        const LC = new LogicConnection(this.state.net, this.canvasRef.current.getContext('2d'))
+        LC.startTransmission(0, 2)
     }
 
     render() {
         return (
             <Fragment>
-                <span>Кількість мереж: {this.state.nc.n - 1}; Середній ступінь мережі:  {Math.round(this.state.nc.p)}; К-сть нод: {this.state.nc.c}; К-сть зв'язків: {this.state.nc.l}</span>
+                <span>Кількість мереж: {this.state.nc.n - 1}; Середній ступінь мережі: {Math.round(this.state.nc.p)}; К-сть нод: {this.state.nc.c}; К-сть зв'язків: {this.state.nc.l}</span>
                 <section className={s.controls}>
                     <button onClick={this.createNetwork}>Создать сеть</button>
                     <button onClick={this.drawAllNetwork}>Отрисовать всю сеть</button>

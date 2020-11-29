@@ -21,3 +21,8 @@ export const getNodesByMacsArray = (allNodes, macs, subs) => {
     })
     return nodes
 }
+
+export const getPathLength = (node1, node2) => {
+    const pos1 = node1.getPos(), pos2 = node2.getPos();
+    return Math.sqrt(Math.pow(pos2.x - pos1.x, 2) + Math.pow(pos2.y - pos1.y, 2))
+}

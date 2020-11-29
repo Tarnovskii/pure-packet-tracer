@@ -4,7 +4,7 @@ import {WorkStation} from "./WorkStation";
 import {dijkstra, parseNetworkToGraph} from "../Utils/NetworkParser";
 import {generateRandomInt} from "../Utils/general";
 import {generatePositionForObject, isPlaceBusy} from "../Utils/canvasUtils";
-import {createLinkTokenByNodes, generateMacAddress, getNodesByMacsArray} from "../Utils/networkUtils";
+import {createLinkTokenByNodes, generateMacAddress, getNodesByMacsArray, getPathLength} from "../Utils/networkUtils";
 
 const WEIGHTS = [2, 3, 5, 7, 10, 12, 15, 20, 21, 25, 27, 28]
 
@@ -16,12 +16,6 @@ export class Network {
         this.nodes = [];
         this.stations = [];
         this.canvas = canvas;
-        this.packages = []
-        this.listener = null
-    }
-
-    subscribe = (listener) => {
-        this.listener = listener;
     }
 
     _createNodes = (ctx) => {
@@ -116,6 +110,7 @@ export class Network {
             }
 
             let station = new WorkStation(generateMacAddress(), position, `172.${i}.0.0`)
+            console.log(station.getMac())
             const link = new Link(
                 WEIGHTS[generateRandomInt(0, WEIGHTS.length)],
                 1, 1,
@@ -171,7 +166,7 @@ export class Network {
         return allNodes;
     }
 
-    _getLinksByNodes = (nodes) => {
+    getLinksByNodes = (nodes) => {
         let links = [];
         nodes.forEach((n, index) => {
             if (index < nodes.length - 1) {
@@ -180,6 +175,10 @@ export class Network {
             }
         })
         return links;
+    }
+
+    getNodeByMac = (mac) => {
+        return this._getNetworkObjects().filter(n => n.getMac() === mac)
     }
 
     _drawNodes = (nodes, ctx) => {
@@ -195,8 +194,6 @@ export class Network {
         nodes.forEach(n => n.drawLinks())
         nodes.forEach(n => n.resetDraw())
     }
-
-    addPackage = (pkg) => this.packages.push(pkg)
 
     getStations = () => this.stations;
 
@@ -217,11 +214,26 @@ export class Network {
             this.nodes[2][generateRandomInt(0, this.nodes[2].length)]
         )
         this._createStations()
+        let graph = parseNetworkToGraph(this._getNetworkObjects());
         let p = 0
         let c = 0
         this.nodes.forEach(net => {
+            net.forEach(node => {
+                let table = {}
+                this.stations.forEach((s) => {
+                    Object.assign(table, {
+                        [s.getMac()]: dijkstra(graph, node.getMac(), s.getMac())
+                    })
+                })
+                node.updateTable(table)
+            })
+        })
+
+        this.nodes.forEach(net => {
             c += net.length;
-            net.forEach(node => p += node.getLinks().length)
+            net.forEach(node => {
+                p += node.getLinks().length
+            })
         })
         return {
             c: c,
@@ -235,7 +247,7 @@ export class Network {
         let graph = parseNetworkToGraph(this._getNetworkObjects());
         let nodes = dijkstra(graph, this.stations[sender].getMac(), this.stations[receiver].getMac())
         let ns = getNodesByMacsArray(this.nodes, nodes.path, this.subs)
-        let ls = this._getLinksByNodes(ns);
+        let ls = this.getLinksByNodes(ns);
         this._drawLinks(ls, ctx);
         this._drawNodes(ns, ctx);
     }
