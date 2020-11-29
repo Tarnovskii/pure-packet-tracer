@@ -6,24 +6,74 @@ export class LogicConnection {
         this.ctx = ctx;
         this.transmission = () => {};
         this.steps = 0;
+        this.data = 3;
+    }
+
+    createPackage = () => {
+
+        if (this.package === undefined) {
+            this.package = new Package(this.network.getStations()[this.sender], this.network.getStations()[this.receiver], 'CONNECTION_REQUEST')
+            return true;
+        }
+
+        const packageType = this.package.getPackageType()
+
+        if (packageType === 'CONNECTION_REQUEST') {
+            this.package = new Package(this.network.getStations()[this.receiver], this.network.getStations()[this.sender], 'APPROVE_CONNECTION_REQUEST')
+            return true;
+        }
+
+        if (packageType === 'APPROVE_CONNECTION_REQUEST') {
+            this.package = new Package(this.network.getStations()[this.sender], this.network.getStations()[this.receiver], 'DATA')
+            return true;
+        }
+
+        if (packageType === 'DATA') {
+            this.package = new Package(this.network.getStations()[this.receiver], this.network.getStations()[this.sender], 'APPROVE_DATA')
+            return true;
+        }
+
+        if (packageType === 'APPROVE_DATA') {
+            if (this.data > 0) {
+                this.package = new Package(this.network.getStations()[this.sender], this.network.getStations()[this.receiver], 'DATA')
+                this.data--;
+            } else {
+                this.package = new Package(this.network.getStations()[this.sender], this.network.getStations()[this.receiver], 'CLOSE_CONNECTION_REQUEST')
+            }
+            return true;
+        }
+
+        if (packageType === 'CLOSE_CONNECTION_REQUEST') {
+            this.package = new Package(this.network.getStations()[this.receiver], this.network.getStations()[this.sender], 'APPROVE_CLOSE_CONNECTION_REQUEST')
+            return true;
+        }
+
+        return false
     }
 
     startTransmission = (sender, receiver) => {
-        this.sender = sender; this.receiver = receiver;
-        this.package = new Package(this.network.getStations()[sender], this.network.getStations()[receiver])
+        this.sender = sender;
+        this.receiver = receiver;
+        this.createPackage(sender, receiver)
         this.createMoveInterval();
     }
 
     createMoveInterval = () => {
         const path = this.getNextPath(this.package.getCurrentNode(), this.package.getReceiver())
-        this.package.updateCurrentNode(path.node[0])
-        const step = this.getStepSize(this.package.getPos(), this.package.getCurrentNode().getPos(), path.link[0].getPower())
+        const step = this.getStepSize(this.package.getPos(), path.node[0].getPos(), path.link[0].getPower())
 
         this.transmission = setInterval(() => {
             if (this.steps >= path.link[0].getPower()) {
-                clearInterval(this.transmission)
-                this.steps = 0;
-                this.createMoveInterval();
+                this.package.updateCurrentNode(path.node[0])
+                if (this.package.getReceiver().getMac() === this.package.getCurrentNode().getMac()) {
+                    clearInterval(this.transmission)
+                    this.steps = 0;
+                    if (this.createPackage()) this.createMoveInterval();
+                } else {
+                    clearInterval(this.transmission)
+                    this.steps = 0;
+                    this.createMoveInterval();
+                }
             } else {
                 this.ctx.clearRect(0, 0, 5000, 2500)
                 this.network.drawShortestPath(this.sender, this.receiver, this.ctx);
@@ -50,6 +100,13 @@ export class LogicConnection {
         this.ctx.shadowBlur = 2;
         this.ctx.shadowColor = 'black';
         this.ctx.fillRect(pos.x, pos.y, 50, 50)
+
+        this.ctx.font = 'bold 30px sans-serif';
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillStyle = "#0037ff";
+        this.ctx.fillText(this.package.getPackageType(), pos.x, pos.y);
+
     }
 
     getStepSize = (startPos, endPos, power) => {
@@ -69,8 +126,10 @@ class Package {
         this.packageType = packageType;
     }
 
+    getPackageType = () => this.packageType
+
     updateCurrentNode = (node) => {
-        this.currentNode = node;
+        this.currentNode = node
     }
 
     getCurrentNode = () => this.currentNode
