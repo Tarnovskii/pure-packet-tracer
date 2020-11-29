@@ -9,6 +9,7 @@ export class LogicConnection {
     }
 
     startTransmission = (sender, receiver) => {
+        this.sender = sender; this.receiver = receiver;
         this.package = new Package(this.network.getStations()[sender], this.network.getStations()[receiver])
         this.createMoveInterval();
     }
@@ -25,7 +26,7 @@ export class LogicConnection {
                 this.createMoveInterval();
             } else {
                 this.ctx.clearRect(0, 0, 5000, 2500)
-                this.network.drawShortestPath(0, 2, this.ctx);
+                this.network.drawShortestPath(this.sender, this.receiver, this.ctx);
                 this.moveTo(this.package.getPos())
                 this.package.updatePosition(step)
                 this.steps++;
