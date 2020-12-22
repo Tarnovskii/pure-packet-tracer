@@ -22,6 +22,6 @@ export const generatePositionForObject = (canvas = {
 
     return  {
         x:  generateRandomInt(canvas.padding.left + width * sub, width * (sub + 1) - canvas.padding.right),
-        y:  canvas.padding.top + generateRandomInt(canvas.padding.top, canvas.height - canvas.padding.bottom),
+        y:  generateRandomInt(canvas.padding.top, canvas.height - canvas.padding.bottom),
     };
 }

@@ -3,8 +3,6 @@ export const parseNetworkToGraph = (network) => {
 
     network.forEach((node) => Object.assign(graph, nodeParser(node)))
 
-    console.log(graph)
-
     return graph;
 }
 

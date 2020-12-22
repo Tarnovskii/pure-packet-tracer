@@ -6,8 +6,13 @@ export class Link {
         this.nodes = nodes
         this.token = token;
         this.isDraw = false;
-        this.style = style
+        this.style = style;
+        this.isBusy = false;
     }
+
+    updateIsBusyStatus = (newStatus) => this.isBusy = newStatus
+
+    getIsBusyStatus = () => this.isBusy
 
     getPower = () => this.power;
 

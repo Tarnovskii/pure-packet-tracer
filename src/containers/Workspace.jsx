@@ -1,8 +1,13 @@
 import React, {Fragment} from 'react'
 
+const {ipcRenderer} = window.require('electron');
+
+const stations = ['WS0', 'WS1', 'WS2'];
+
 import s from '../stylesheets/workspace.module.css'
 import {Network} from "../classes/Network";
 import {LogicConnection} from "../controllers/LogicController";
+import {DatagramController} from "../controllers/DatagramController";
 
 export class Workspace extends React.Component {
     constructor(props) {
@@ -13,6 +18,10 @@ export class Workspace extends React.Component {
             ctrlDown: false,
             zoom: 0.38,
             nc: 0,
+            type: 'null',
+            sender: 'WS0',
+            receiver: 'WS1',
+            isNetworkCreated: false
         }
     }
 
@@ -26,10 +35,10 @@ export class Workspace extends React.Component {
                     break;
                 }
                 case 'L': {
-                    console.log(123)
                     break;
                 }
-                default: break;
+                default:
+                    break;
             }
         }
 
@@ -83,20 +92,77 @@ export class Workspace extends React.Component {
     }
 
     startLogicBroadcast = () => {
-        const LC = new LogicConnection(this.state.net, this.canvasRef.current.getContext('2d'))
-        LC.startTransmission(0, 2)
+        const LC = new LogicConnection(this.state.net, this.canvasRef.current.getContext('2d'), 18, 128)
+        LC.startTransmission(+this.state.sender[2], +this.state.receiver[2], 256)
     }
+
+    startDatagramBroadcast = () => {
+        const DC = new DatagramController(this.state.net, this.canvasRef.current.getContext('2d'))
+        DC.startTransmission(+this.state.sender[2], +this.state.receiver[2])
+    }
+
+    _displaySettings = () => (
+        <>
+            <button onClick={this.drawAllNetwork}>Вся мережа</button>
+            <button onClick={this.drawShortestPath}>Найкоротший шлях</button>
+            <select onClick={e => this.setState({
+                type: e.target.value
+            })}>
+                <option value={'null'}>Режим</option>
+                <option value={'lm'}>Логічний режим</option>
+                <option value={'dm'}>Дейтаграмний режим</option>
+            </select>
+        </>
+    )
+
+    _targetsSettings = () => (
+        <>
+            <select onClick={e => this.setState({
+                sender: e.target.value
+            })}>
+                {stations.filter(s => s !== this.state.receiver).map((s, index) => <option key={index} value={s}>{s}</option>)}
+            </select>
+            <select onClick={e => this.setState({
+                receiver: e.target.value
+            })}>
+                {stations.filter(s => s !== this.state.sender).map((s, index) => <option key={index} value={s}>{s}</option>)}
+            </select>
+        </>
+    )
+
+    _start = () => (
+        <>
+            <button onClick={this._startHandler}>Почати</button>
+        </>
+    )
+
+    _startHandler = () => {
+        if (this.state.type === 'dm') this.startDatagramBroadcast()
+        else this.startLogicBroadcast()
+    }
+
+    renderControls = () => (
+        <section className={s.controls}>
+            <button onClick={() => {
+                this.createNetwork();
+                this.setState({
+                    isNetworkCreated: true
+                })
+
+            }}>Сгенерувати мережу
+            </button>
+            {this.state.isNetworkCreated ? this._displaySettings() : null}
+            {this.state.type !== 'null' ? this._targetsSettings() : null}
+            {this.state.isNetworkCreated && (this.state.type !== 'null') ? this._start() : null}
+            {}
+        </section>
+    )
 
     render() {
         return (
             <Fragment>
                 <span>Кількість мереж: {this.state.nc.n - 1}; Середній ступінь мережі: {Math.round(this.state.nc.p)}; К-сть нод: {this.state.nc.c}; К-сть зв'язків: {this.state.nc.l}</span>
-                <section className={s.controls}>
-                    <button onClick={this.createNetwork}>Создать сеть</button>
-                    <button onClick={this.drawAllNetwork}>Отрисовать всю сеть</button>
-                    <button onClick={this.drawShortestPath}>Отрисовать Кратчайший путь</button>
-                    <button onClick={this.startLogicBroadcast}>Начать логическое общение (WS1 -> WS3)</button>
-                </section>
+                {this.renderControls()}
                 <section style={{
                     zoom: this.state.zoom
                 }} className={s.wrapper}>

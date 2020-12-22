@@ -110,7 +110,6 @@ export class Network {
             }
 
             let station = new WorkStation(generateMacAddress(), position, `172.${i}.0.0`)
-            console.log(station.getMac())
             const link = new Link(
                 WEIGHTS[generateRandomInt(0, WEIGHTS.length)],
                 1, 1,
